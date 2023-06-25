@@ -37,7 +37,6 @@ jobs:
         else
           composer update
         fi
-        composer run-script post-install-cmd --no-interaction
 
     - name: Run PHPUnit
       run: vendor/bin/phpunit
