@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '1.x'
+      - 'main'
+  pull_request:
+    branches:
+      - '*'
+
+permissions:
+  contents: read
+
+jobs:
+  testsuite:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.2', '7.4', '8.0', '8.1', '8.2']
+    name: PHP ${{ matrix.php-version }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        coverage: none
+
+    - name: Composer install
+      run: |
+        if [[ ${{ matrix.php-version }} == '8.1' || ${{ matrix.php-version }} == '8.2' ]]; then
+          composer update --ignore-platform-reqs
+        else
+          composer update
+        fi
+        composer run-script post-install-cmd --no-interaction
+
+    - name: Run PHPUnit
+      run: vendor/bin/phpunit
+
+  coding-standard:
+    name: Coding Standard
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        coverage: none
+
+    - name: Composer install
+      run: composer install
+
+    - name: Run PHP CodeSniffer
+      run: composer cs-check
+
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        coverage: none
+
+    - name: Composer install
+      run: composer install
+
+    - name: Run phpstan
+      run: vendor/bin/phpstan
