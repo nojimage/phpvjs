@@ -51,7 +51,7 @@ class PHPvJSMiddleware implements \Psr\Http\Server\MiddlewareInterface
             $script === '' ||
             !preg_match(
                 '/\bx?html\b/',
-                $response->getHeaderLine('Content-Type') ?? ''
+                $response->getHeaderLine('Content-Type')
             )
         ) {
             return $response;
