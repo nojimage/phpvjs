@@ -1,5 +1,9 @@
 # PHPvJS Middleware
 
+![License](https://img.shields.io/github/license/nojimage/phpvjs)
+![Packagist Version (custom server)](https://img.shields.io/packagist/v/nojimage/phpvjs)
+[![Build Status](https://github.com/nojimage/phpvjs/actions/workflows/ci.yml/badge.svg)](https://github.com/nojimage/phpvjs/actions/workflows/ci.yml)
+
 ## Overview
 
 This project is a middleware that allows passing PHP variables to JavaScript in a PSR-7 and PSR-15 compliant manner. It is designed to be used with frameworks that have a PSR-15 middleware stack.
