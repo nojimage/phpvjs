@@ -1,0 +1,51 @@
+{
+    "name": "nojimage/phpvjs",
+    "description": "PSR-15 Middleware for passing PHP variables to JavaScript",
+    "type": "library",
+    "require": {
+        "php": "^7.2 || ^8.0",
+        "ext-json": "*",
+        "psr/http-server-middleware": "^1.0 || ^2.0"
+    },
+    "require-dev": {
+        "laminas/laminas-diactoros": "^1.8 || ^2.4 || ^3.0",
+        "phpstan/phpstan": "^1.10",
+        "phpunit/phpunit": "^8.5 || ^9.0 || ^10.0",
+        "squizlabs/php_codesniffer": "^3.7"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Nojimage\\PHPvJS\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Nojimage\\PHPvJS\\Test\\TestCase\\": "tests/TestCase/",
+            "Nojimage\\PHPvJS\\Test\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "nojimage"
+        }
+    ],
+    "scripts": {
+        "check": [
+            "@cs-check",
+            "@stan",
+            "@test"
+        ],
+        "cs-check": "phpcs --colors -p  src/ tests/",
+        "cs-fix": "phpcbf --colors -p src/ tests/",
+        "stan": "phpstan analyse",
+        "test": "phpunit --colors=always"
+    },
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}
