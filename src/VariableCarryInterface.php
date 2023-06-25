@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2023 nojimage
+ * Copyright (c) 2023 Takashi Nojima
  */
 
 namespace Nojimage\PHPvJS;

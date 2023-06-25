@@ -1,8 +1,4 @@
 <?xml version="1.0"?>
-<!--
-  ~ Copyright (c) 2023 nojimage
-  -->
-
 <ruleset name="PHPvJS">
     <rule ref="PSR12"/>
 </ruleset>
