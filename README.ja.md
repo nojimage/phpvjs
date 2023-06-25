@@ -31,14 +31,19 @@ PSR-15対応のミドルウェアスタックに追加する
 リクエストオブジェクトの属性から取得できる `\Nojimage\PHPvJS\VariableCarry` のインスタンスを利用して、PHP変数をJavaScriptに渡すことができます。
 
 ```php
-/** @var \Psr\Http\Message\ServerRequestInterface $request */
-$request->getAttribute(\Nojimage\PHPvJS\VariableCarry::class)->toJs('foo', $somevalue);
+/*
+ * @var \Psr\Http\Message\ServerRequestInterface $request 
+ */
+
+/** @var \Nojimage\PHPvJS\VariableCarry $carry */
+$carry = $request->getAttribute(\Nojimage\PHPvJS\VariableCarry::class);
+$carry->toJs('foo', $somevalue);
 ```
 
 JavaScript側では、`window.__phpvjs__`オブジェクトからPHP変数を取得できます。
 
 ```js
-console.log(window.__phpvjs__.foo);
+console.log(window.__phpvjs__);
 // または
 phpvjs = window.__phpvjs__ ?? {};
 ```
