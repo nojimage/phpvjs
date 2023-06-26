@@ -6,7 +6,9 @@
 
 ## Overview
 
-This project is a middleware that allows passing PHP variables to JavaScript in a PSR-7 and PSR-15 compliant manner. It is designed to be used with frameworks that have a PSR-15 middleware stack.
+This library aims to facilitate passing values to JavaScript frameworks like Vue without the need to create an API. It is particularly useful for rapidly developing Web applications in a Multi-Page Application (MPA).
+
+This project provide a middleware that allows passing PHP variables to JavaScript. It is designed to be used with frameworks that have a PSR-15 middleware stack.
 
 ## Requirements
 
@@ -51,6 +53,26 @@ On the JavaScript side, you can access the PHP variables through the `window.__p
 console.log(window.__phpvjs__);
 // or
 const phpvjs = window.__phpvjs__ ?? {};
+```
+
+### Integration to Vue.js
+
+In entry point script file:
+
+```js
+import { createApp } from 'vue';
+
+const app = createApp({
+    data() {
+        // Pass PHP variables to Vue.js using PHPvJS
+        return window.__phpvjs__ ?? {};
+    },
+    // ... other options
+});
+
+// ...other setups
+
+app.mount("#app");
 ```
 
 ## Contributing

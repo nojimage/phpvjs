@@ -1,6 +1,8 @@
 # PHPvJS Middleware
 
-PHP変数をJavaScriptに渡す PSR-7, PSR-15対応ミドルウェア
+このライブラリは、API を作成することなく、Vue などの JavaScript フレームワークに値を渡しやすくすることを目的としています。 これは、マルチページ アプリケーション (MPA) で Web アプリケーションを迅速に開発する場合に特に役立ちます。
+
+このプロジェクトは、PHP 変数を JavaScript に渡すことを可能にするミドルウェアを提供します。 PSR-15に準拠するミドルウェアスタックを備えたフレームワークで使用するように設計されています。
 
 ## 必要要件
 
@@ -46,4 +48,24 @@ JavaScript側では、`window.__phpvjs__`オブジェクトからPHP変数を取
 console.log(window.__phpvjs__);
 // または
 phpvjs = window.__phpvjs__ ?? {};
+```
+
+### Vue.js での使用例
+
+エントリーポイントとなるファイルで
+
+```js
+import { createApp } from 'vue';
+
+const app = createApp({
+    data() {
+        // PHPvJSを通じてセットされた値を利用する
+        return window.__phpvjs__ ?? {};
+    },
+    // ... other options
+});
+
+// ...other setups
+
+app.mount("#app");
 ```
