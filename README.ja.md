@@ -6,7 +6,7 @@
 
 ## 必要要件
 
-- PHP 7.2以上
+- PHP 8.2以上
 - PSR-15対応のミドルウェアスタックを持つフレームワーク
 
 ## インストール
@@ -17,7 +17,7 @@ composer require nojimage/phpvjs
 
 PSR-15対応のミドルウェアスタックに追加する
 
-例: CakePHP 4.x
+例: CakePHP 5.x
 
 ```php
 // src/Application.php

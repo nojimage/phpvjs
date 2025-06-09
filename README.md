@@ -12,7 +12,7 @@ This project provide a middleware that allows passing PHP variables to JavaScrip
 
 ## Requirements
 
-- PHP 7.2 or above
+- PHP 8.2 or above
 - Framework with PSR-15 compliant middleware stack
 
 ## Installation
@@ -21,7 +21,7 @@ This project provide a middleware that allows passing PHP variables to JavaScrip
 composer require nojimage/phpvjs
 ```
 
-Add it to your PSR-15 middleware stack. Here's an example for CakePHP 4.x:
+Add it to your PSR-15 middleware stack. Here's an example for CakePHP 5.x:
 
 ```php
 // src/Application.php
