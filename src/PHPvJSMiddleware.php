@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2023 Takashi Nojima
+ * Copyright (c) 2023-2025 Takashi Nojima
  */
 
 declare(strict_types=1);
@@ -10,6 +10,7 @@ namespace Nojimage\PHPvJS;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -17,7 +18,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  *
  * Pass PHP variables to JavaScript
  */
-class PHPvJSMiddleware implements \Psr\Http\Server\MiddlewareInterface
+class PHPvJSMiddleware implements MiddlewareInterface
 {
     /**
      * @var VariableCarryInterface
@@ -29,7 +30,7 @@ class PHPvJSMiddleware implements \Psr\Http\Server\MiddlewareInterface
      *
      * @param VariableCarryInterface|null $carry the carry instance
      */
-    public function __construct(VariableCarryInterface $carry = null)
+    public function __construct(?VariableCarryInterface $carry = null)
     {
         $this->carry = $carry ?? new VariableCarry();
     }
@@ -75,7 +76,11 @@ class PHPvJSMiddleware implements \Psr\Http\Server\MiddlewareInterface
         $newStream->write($updatedContent);
         $newStream->rewind();
 
-        return $response->withBody($newStream);
+        $response = $response->withBody($newStream);
+
+        assert($response instanceof ResponseInterface, 'Response must implement ResponseInterface');
+
+        return $response;
     }
 
     /**

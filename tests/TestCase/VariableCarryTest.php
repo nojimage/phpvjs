@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2023 Takashi Nojima
+ * Copyright (c) 2023-2025 Takashi Nojima
  */
 
 declare(strict_types=1);
@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Nojimage\PHPvJS\Test\TestCase;
 
 use Nojimage\PHPvJS\VariableCarry;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class VariableCarryTest extends TestCase
@@ -37,9 +38,9 @@ class VariableCarryTest extends TestCase
     /**
      * Can set variable to JavaScript
      *
-     * @dataProvider dataRenderScriptTag
      * @return void
      */
+    #[DataProvider('dataRenderScriptTag')]
     public function testRenderScriptTag(array $data, string $expects): void
     {
         $this->carray->setJsData($data);
@@ -49,7 +50,7 @@ class VariableCarryTest extends TestCase
     /**
      * @return array[]
      */
-    public function dataRenderScriptTag(): array
+    public static function dataRenderScriptTag(): array
     {
         return [
             'variables empty will return empty string' => [
