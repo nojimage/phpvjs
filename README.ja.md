@@ -25,7 +25,7 @@ PSR-15対応のミドルウェアスタックに追加する
     {
         // ...
         $middlewareQueue->add(new \Nojimage\PHPvJS\PHPvJSMiddleware());
-    };
+    }
 ```
 
 ## 使い方

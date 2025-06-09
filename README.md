@@ -30,7 +30,7 @@ public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
     // ...
     $middlewareQueue->add(new \Nojimage\PHPvJS\PHPvJSMiddleware());
     // ...
-};
+}
 ```
 
 ## Usage
