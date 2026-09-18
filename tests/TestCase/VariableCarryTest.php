@@ -156,60 +156,71 @@ class VariableCarryTest extends TestCase
     }
 
     /**
-     * Accepts window variable names that are valid JavaScript identifiers
+     * Keeps window variable names that are not plain identifiers usable
      *
      * @return void
      */
-    #[DataProvider('dataValidWindowVar')]
-    public function testSetWindowVarWithValidName(string $windowVar): void
+    #[DataProvider('dataWindowVarRendering')]
+    public function testRenderScriptTagWithWindowVar(string $windowVar, string $expects): void
     {
-        $this->carray->setWindowVar($windowVar);
-        $this->carray->toJs('foo', 'bar');
+        $carry = new VariableCarry($windowVar);
+        $carry->toJs('foo', 'bar');
 
-        $this->assertStringStartsWith(sprintf('<script>window["%s"]', $windowVar), $this->carray->renderScriptTag());
+        $this->assertSame($expects, $carry->renderScriptTag());
     }
 
     /**
      * @return array[]
      */
-    public static function dataValidWindowVar(): array
+    public static function dataWindowVarRendering(): array
     {
         return [
-            'default name' => ['__phpvjs__'],
-            'leading underscore' => ['_php_'],
-            'leading dollar sign' => ['$app'],
-            'with digits' => ['app0'],
+            'leading dollar sign' => [
+                '$app',
+                '<script>window["$app"] = {"foo":"bar"};</script>',
+            ],
+            'contains a dot' => [
+                'foo.bar',
+                '<script>window["foo.bar"] = {"foo":"bar"};</script>',
+            ],
+            'contains a hyphen' => [
+                'my-var',
+                '<script>window["my-var"] = {"foo":"bar"};</script>',
+            ],
+            'non ascii name' => [
+                "\u{30C7}\u{30FC}\u{30BF}",
+                '<script>window["\u30c7\u30fc\u30bf"] = {"foo":"bar"};</script>',
+            ],
+            // the name must not escape the subscript and start new statements
+            'breaks out of the property access' => [
+                '"]=1;alert(1);//',
+                '<script>window["\u0022]=1;alert(1);\/\/"] = {"foo":"bar"};</script>',
+            ],
+            'closes the script tag' => [
+                '</script>',
+                '<script>window["\u003C\/script\u003E"] = {"foo":"bar"};</script>',
+            ],
+            'contains an escaping text span start' => [
+                '<!--<script>',
+                '<script>window["\u003C!--\u003Cscript\u003E"] = {"foo":"bar"};</script>',
+            ],
+            'trailing newline' => [
+                "foo\n",
+                '<script>window["foo\n"] = {"foo":"bar"};</script>',
+            ],
         ];
     }
 
     /**
-     * Rejects window variable names that would break out of the script tag
+     * Rejects an empty window variable name
      *
      * @return void
      */
-    #[DataProvider('dataInvalidWindowVar')]
-    public function testSetWindowVarWithInvalidName(string $windowVar): void
+    public function testSetWindowVarWithEmptyString(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $this->carray->setWindowVar($windowVar);
-    }
-
-    /**
-     * @return array[]
-     */
-    public static function dataInvalidWindowVar(): array
-    {
-        return [
-            'empty string' => [''],
-            'breaks out of the property access' => ['"]=1;alert(1);//'],
-            'closes the script tag' => ['</script><img src=x onerror=alert(1)>'],
-            'trailing newline' => ["foo\n"],
-            'leading digit' => ['0app'],
-            'contains a space' => ['foo bar'],
-            'contains a dot' => ['foo.bar'],
-            'contains a hyphen' => ['foo-bar'],
-        ];
+        $this->carray->setWindowVar('');
     }
 
     /**

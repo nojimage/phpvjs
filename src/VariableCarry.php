@@ -72,14 +72,15 @@ class VariableCarry implements VariableCarryInterface
             return '';
         }
 
-        // escape `<`, `>`, `&`, `'`, `"` so that the JSON cannot alter
-        // how the HTML parser tokenizes the surrounding script element
-        $json = json_encode(
-            $this->vars,
-            \JSON_HEX_TAG | \JSON_HEX_AMP | \JSON_HEX_APOS | \JSON_HEX_QUOT | \JSON_THROW_ON_ERROR
-        );
+        // escape `<`, `>`, `&`, `'`, `"` so that neither the variable name nor
+        // the values can alter how the HTML parser tokenizes the script element
+        $flags = \JSON_HEX_TAG | \JSON_HEX_AMP | \JSON_HEX_APOS | \JSON_HEX_QUOT | \JSON_THROW_ON_ERROR;
 
-        return sprintf('<script>window["%s"] = %s;</script>', $this->windowVar, $json);
+        // json_encode() of a string yields the surrounding double quotes too
+        $name = json_encode($this->windowVar, $flags);
+        $json = json_encode($this->vars, $flags);
+
+        return sprintf('<script>window[%s] = %s;</script>', $name, $json);
     }
 
     /**
@@ -90,13 +91,8 @@ class VariableCarry implements VariableCarryInterface
      */
     public function setWindowVar(string $windowVar): void
     {
-        // the name is interpolated into the script tag as-is, so restrict it
-        // to a plain JavaScript identifier. `\A`/`\z` instead of `^`/`$`,
-        // otherwise a trailing newline would slip through
-        if (!preg_match('/\A[A-Za-z_$][A-Za-z0-9_$]*\z/', $windowVar)) {
-            throw new \InvalidArgumentException(
-                sprintf('windowVar must be a valid JavaScript identifier, "%s" given', $windowVar)
-            );
+        if ($windowVar === '') {
+            throw new \InvalidArgumentException('windowVar must be a non-empty string');
         }
 
         $this->windowVar = $windowVar;
