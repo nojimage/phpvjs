@@ -65,7 +65,6 @@ class VariableCarry implements VariableCarryInterface
      *
      * @return string
      * @throws \JsonException
-     * @throws \InvalidArgumentException
      */
     public function renderScriptTag(): string
     {
@@ -73,15 +72,15 @@ class VariableCarry implements VariableCarryInterface
             return '';
         }
 
-        // for PHP < 7.3 check JSON_THROW_ON_ERROR
-        $json = defined('JSON_THROW_ON_ERROR')
-            ? json_encode($this->vars, \JSON_THROW_ON_ERROR)
-            : json_encode($this->vars);
-        if ($json === false) {
-            throw new \InvalidArgumentException(json_last_error_msg(), json_last_error());
-        }
+        // escape `<`, `>`, `&`, `'`, `"` so that neither the variable name nor
+        // the values can alter how the HTML parser tokenizes the script element
+        $flags = \JSON_HEX_TAG | \JSON_HEX_AMP | \JSON_HEX_APOS | \JSON_HEX_QUOT | \JSON_THROW_ON_ERROR;
 
-        return sprintf('<script>window["%s"] = %s;</script>', $this->windowVar, $json);
+        // json_encode() of a string yields the surrounding double quotes too
+        $name = json_encode($this->windowVar, $flags);
+        $json = json_encode($this->vars, $flags);
+
+        return sprintf('<script>window[%s] = %s;</script>', $name, $json);
     }
 
     /**
