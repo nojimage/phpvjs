@@ -91,6 +91,43 @@ class VariableCarryTest extends TestCase
                 . '{"jsonVar":{"foo":"bar"}};'
                 . '</script>',
             ],
+            // the closing tag must not terminate the script element
+            'set with a value containing a script closing tag' => [
+                [
+                    'xssVar' => '</script><img src=x onerror=alert(1)>',
+                ],
+                '<script>window["__phpvjs__"] = '
+                . '{"xssVar":"\u003C\/script\u003E\u003Cimg src=x onerror=alert(1)\u003E"};'
+                . '</script>',
+            ],
+            // `<!--<script>` puts the HTML tokenizer into the script data double escaped state,
+            // where the closing tag is no longer recognized
+            'set with a value containing an escaping text span start' => [
+                [
+                    'xssVar' => '<!--<script>',
+                ],
+                '<script>window["__phpvjs__"] = '
+                . '{"xssVar":"\u003C!--\u003Cscript\u003E"};'
+                . '</script>',
+            ],
+            'set with a value containing quotes and ampersand' => [
+                [
+                    'quotVar' => 'say "hi"',
+                    'aposVar' => "it's",
+                    'ampVar' => 'a&b',
+                ],
+                '<script>window["__phpvjs__"] = '
+                . '{"quotVar":"say \u0022hi\u0022","aposVar":"it\u0027s","ampVar":"a\u0026b"};'
+                . '</script>',
+            ],
+            'set with a key containing a script closing tag' => [
+                [
+                    '</script>' => 'value',
+                ],
+                '<script>window["__phpvjs__"] = '
+                . '{"\u003C\/script\u003E":"value"};'
+                . '</script>',
+            ],
         ];
     }
 
