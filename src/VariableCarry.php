@@ -96,8 +96,13 @@ class VariableCarry implements VariableCarryInterface
      */
     public function setWindowVar(string $windowVar): void
     {
-        if ($windowVar === '') {
-            throw new \InvalidArgumentException('windowVar must be a non-empty string');
+        // the name is interpolated into the script tag as-is, so restrict it
+        // to a plain JavaScript identifier. `\A`/`\z` instead of `^`/`$`,
+        // otherwise a trailing newline would slip through
+        if (!preg_match('/\A[A-Za-z_$][A-Za-z0-9_$]*\z/', $windowVar)) {
+            throw new \InvalidArgumentException(
+                sprintf('windowVar must be a valid JavaScript identifier, "%s" given', $windowVar)
+            );
         }
 
         $this->windowVar = $windowVar;

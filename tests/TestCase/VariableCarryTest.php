@@ -156,6 +156,63 @@ class VariableCarryTest extends TestCase
     }
 
     /**
+     * Accepts window variable names that are valid JavaScript identifiers
+     *
+     * @return void
+     */
+    #[DataProvider('dataValidWindowVar')]
+    public function testSetWindowVarWithValidName(string $windowVar): void
+    {
+        $this->carray->setWindowVar($windowVar);
+        $this->carray->toJs('foo', 'bar');
+
+        $this->assertStringStartsWith(sprintf('<script>window["%s"]', $windowVar), $this->carray->renderScriptTag());
+    }
+
+    /**
+     * @return array[]
+     */
+    public static function dataValidWindowVar(): array
+    {
+        return [
+            'default name' => ['__phpvjs__'],
+            'leading underscore' => ['_php_'],
+            'leading dollar sign' => ['$app'],
+            'with digits' => ['app0'],
+        ];
+    }
+
+    /**
+     * Rejects window variable names that would break out of the script tag
+     *
+     * @return void
+     */
+    #[DataProvider('dataInvalidWindowVar')]
+    public function testSetWindowVarWithInvalidName(string $windowVar): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->carray->setWindowVar($windowVar);
+    }
+
+    /**
+     * @return array[]
+     */
+    public static function dataInvalidWindowVar(): array
+    {
+        return [
+            'empty string' => [''],
+            'breaks out of the property access' => ['"]=1;alert(1);//'],
+            'closes the script tag' => ['</script><img src=x onerror=alert(1)>'],
+            'trailing newline' => ["foo\n"],
+            'leading digit' => ['0app'],
+            'contains a space' => ['foo bar'],
+            'contains a dot' => ['foo.bar'],
+            'contains a hyphen' => ['foo-bar'],
+        ];
+    }
+
+    /**
      * Can reset variables
      *
      * @return void
